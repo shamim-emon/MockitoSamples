@@ -8,6 +8,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
@@ -19,19 +21,21 @@ class ArgumentCaptorTest {
 
     @Before
     fun setUp(){
-        personList.add(Person(1,"A"))
-        personList.add(Person(2,"B"))
-        personList.add(Person(3,"C"))
+
     }
     @Test
     fun captorTest(){
-        verify(personList, times(3)).add(capture(personCaptor))
-        val results=personCaptor.allValues
-        assertThat(results.get(0).name, `is`("A"))
-        assertThat(results.get(1).name, `is`("B"))
-        assertThat(results.get(2).name, `is`("C"))
+
+        personList.add(Person(1,"A"))
+        /**
+         * Below  fail because personList.add(Person) is expected to call never
+         * but been called once above
+         */
+        verify(personList, never()).add(any(Person::class.java))
     }
 }
+
+private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
 
 data class Person(val id:Int,val name:String)
 
